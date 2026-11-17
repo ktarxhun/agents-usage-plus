@@ -19,7 +19,9 @@ ColumnLayout {
     property bool active: false
     signal refreshRequested()
 
-    readonly property var providers: (usage && Array.isArray(usage.providers)) ? usage.providers.filter(p => !!p) : []
+    // Already filtered by the settings in main.qml (providers and windows switched off are gone)
+    property var shownProviders: []
+    readonly property var providers: shownProviders.filter(p => !!p)
     readonly property bool hasData: providers.length > 0
     // Wall clock used for relative reset times; bumped by the timer below.
     property real now: Date.now()
@@ -44,7 +46,10 @@ ColumnLayout {
         return String(s === undefined || s === null ? "" : s).replace(/[<>]/g, "");
     }
 
+    // -1 when the window has no percentage (Antigravity's inactive 5-hour window)
     function remainingOf(w) {
+        if (w.usedPercent === null || w.usedPercent === undefined)
+            return -1;
         const used = Number(w.usedPercent);
         if (isNaN(used))
             return 0;
@@ -59,14 +64,14 @@ ColumnLayout {
         return Kirigami.Theme.highlightColor;
     }
 
+    // The model group (Gemini, Claude ve GPT, ...) is shown as a sub-heading, so the label is the window only
     function windowLabel(w) {
         switch (w.key) {
         case "session":
             return i18n("5 hours");
         case "weekly":
-            return i18n("Weekly");
         case "weekly_scoped":
-            return w.model ? i18n("Weekly · %1", w.model) : i18n("Weekly");
+            return i18n("Weekly");
         default:
             return w.key || "";
         }
@@ -168,6 +173,24 @@ ColumnLayout {
             readonly property var windows: modelData.windows || []
             readonly property string errorMessage: modelData.errorCode ? limits.errorText(modelData.errorCode, modelData.errorDetail) : ""
             readonly property string staleHint: limits.plain(errorMessage) || i18n("Live data unavailable, showing cached values")
+            // Windows grouped by model family, in order of first appearance; ungrouped ones have no title
+            readonly property var windowGroups: {
+                const groups = [];
+                for (const w of windows) {
+                    const title = w.model || "";
+                    let group = groups.find(g => g.title === title);
+                    if (!group) {
+                        group = { title: title, windows: [] };
+                        groups.push(group);
+                    }
+                    group.windows.push(w);
+                }
+                // 5-hour window first, then weekly, inside every group
+                const rank = w => ({ session: 0, weekly: 1, weekly_scoped: 2 })[w.key] ?? 3;
+                for (const group of groups)
+                    group.windows.sort((a, b) => rank(a) - rank(b));
+                return groups;
+            }
 
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
@@ -184,30 +207,24 @@ ColumnLayout {
                 Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
 
-                PlasmaExtras.Heading {
-                    level: 3
+                // Provider title: explicit bold, because Kirigami.Heading ignores font.bold
+                PlasmaComponents3.Label {
                     text: providerItem.modelData.name || providerItem.modelData.id || ""
                     textFormat: Text.PlainText
                     elide: Text.ElideRight
+                    font.bold: true
+                    font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.2
                 }
 
-                Rectangle {
+                // Plan as quiet small text next to the name, not a badge
+                PlasmaComponents3.Label {
+                    id: planLabel
                     visible: !!providerItem.modelData.plan
-                    implicitWidth: planLabel.implicitWidth + Kirigami.Units.smallSpacing * 2
-                    implicitHeight: planLabel.implicitHeight + Kirigami.Units.smallSpacing
-                    radius: height / 2
-                    color: Qt.alpha(Kirigami.Theme.highlightColor, 0.15)
-                    border.width: 1
-                    border.color: Qt.alpha(Kirigami.Theme.highlightColor, 0.4)
-
-                    PlasmaComponents3.Label {
-                        id: planLabel
-                        anchors.centerIn: parent
-                        text: providerItem.modelData.plan || ""
-                        textFormat: Text.PlainText
-                        color: Kirigami.Theme.highlightColor
-                        font: Kirigami.Theme.smallFont
-                    }
+                    Layout.alignment: Qt.AlignBaseline
+                    text: "· " + (providerItem.modelData.plan || "")
+                    textFormat: Text.PlainText
+                    color: Kirigami.Theme.disabledTextColor
+                    font: Kirigami.Theme.smallFont
                 }
 
                 Item {
@@ -267,9 +284,31 @@ ColumnLayout {
             }
 
             Repeater {
-                model: providerItem.windows
+                model: providerItem.windowGroups
 
                 delegate: ColumnLayout {
+                    id: groupItem
+
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    spacing: 0
+
+                    // Sub-heading for a model family, e.g. "Gemini" under Antigravity
+                    PlasmaComponents3.Label {
+                        visible: groupItem.modelData.title !== ""
+                        Layout.fillWidth: true
+                        Layout.topMargin: Kirigami.Units.largeSpacing
+                        text: groupItem.modelData.title
+                        textFormat: Text.PlainText
+                        opacity: 0.75
+                        elide: Text.ElideRight
+                    }
+
+                    Repeater {
+                        model: groupItem.modelData.windows
+
+                        delegate: ColumnLayout {
                     id: windowItem
 
                     required property var modelData
@@ -278,6 +317,7 @@ ColumnLayout {
                     readonly property string reset: limits.resetText(modelData.resetsAt)
 
                     Layout.fillWidth: true
+                            Layout.leftMargin: Kirigami.Units.largeSpacing
                     Layout.topMargin: Kirigami.Units.smallSpacing
                     spacing: Math.round(Kirigami.Units.smallSpacing / 2)
 
@@ -296,8 +336,8 @@ ColumnLayout {
                         PlasmaExtras.Heading {
                             Layout.alignment: Qt.AlignBaseline
                             level: 2
-                            text: i18nc("remaining percentage", "%1%", windowItem.remaining)
-                            color: windowItem.remaining <= 40 ? windowItem.tone : Kirigami.Theme.textColor
+                            text: windowItem.remaining < 0 ? i18n("Not active") : i18nc("remaining percentage", "%1%", windowItem.remaining)
+                            color: windowItem.remaining < 0 ? Kirigami.Theme.disabledTextColor : (windowItem.remaining <= 40 ? windowItem.tone : Kirigami.Theme.textColor)
                         }
                     }
 
@@ -315,6 +355,7 @@ ColumnLayout {
                                 top: parent.top
                                 bottom: parent.bottom
                             }
+                            visible: windowItem.remaining >= 0
                             width: Math.max(height, parent.width * windowItem.remaining / 100)
                             radius: parent.radius
                             color: windowItem.tone
@@ -335,6 +376,8 @@ ColumnLayout {
                         color: Kirigami.Theme.disabledTextColor
                         font: Kirigami.Theme.smallFont
                         elide: Text.ElideRight
+                    }
+                        }
                     }
                 }
             }

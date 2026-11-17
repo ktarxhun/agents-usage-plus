@@ -1,15 +1,22 @@
 {
     "KPlugin": {
-        "Authors": [{ "Name": "Yusuf İpek" }],
+        "Authors": [
+            {
+                "Name": "Yusuf İpek"
+            },
+            {
+                "Name": "Kuzey (fork)"
+            }
+        ],
         "Category": "System Information",
         "Description": "Remaining 5-hour and weekly limits for Claude and OpenAI Codex",
         "Description[tr]": "Claude ve OpenAI Codex için kalan 5 saatlik ve haftalık limitler",
         "Icon": "speedometer",
-        "Id": "io.github.yusufipk.agentsusage",
+        "Id": "io.github.kuzey.agentsusage",
         "License": "MIT",
         "Name": "Agents Usage",
         "Name[tr]": "Ajan Limitleri",
-        "Version": "1.0"
+        "Version": "1.1.0"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0",

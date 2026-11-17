@@ -1,18 +1,19 @@
-# Agents Usage
+# Ajan Limitleri (çatal)
 
-A KDE Plasma 6 widget that shows how much of the 5-hour and weekly limits are left on your Claude and OpenAI Codex subscriptions, plus a second tab with tokens by day and by model counted from the local Claude Code and Codex logs (so only as far back as those tools keep them, and without claude.ai chats) and what they would have cost at API list prices, cache included, using LiteLLM's public price list fetched once a day. The text follows the system language, English or Turkish. It reads the logins Claude Code (`~/.claude/.credentials.json`) and the Codex CLI (`~/.codex/auth.json`) already keep, so both need to be signed in once. An expired Codex token is refreshed the way the CLI does it and written back to `auth.json`; the Claude token is only read, so after a long break from Claude Code the widget shows the last known numbers until you open `claude` again. It refreshes every 5 minutes and whenever the popup opens.
+[yusufipk/kde-agents-usage](https://github.com/yusufipk/kde-agents-usage) (MIT) üzerine
+yapılmış çatal. Orijinal yazar: Yusuf İpek. Bu sürümde eklenenler:
 
-![Light theme](docs/screenshot-light.png)
-![Dark theme](docs/screenshot-dark.png)
+- **Antigravity** sağlayıcısı: Gemini ve Claude/GPT model grupları için 5 saatlik ve haftalık
+  limit, bir de Gemini 4 Argon haftalık limiti. Veri çalışan Antigravity sunucusundan okunur.
+- **Haftalık bittiğinde 5 saatlik de %100 gösterilir** (haftalık dolu iken 5 saatlik kullanılamaz).
+- **Ayarlar:** yenileme süresi, sağlayıcı ve pencere bazında göster/gizle, Tokenlar sekmesini
+  gizle, son güncelleme satırını gizle, tepsi ikonunu halka ya da düz ikon yap.
+- Plan etiketi (Pro, Plus) yuvarlak rozet yerine düz metin.
 
-## Install
+Antigravity parser'ı gerçek hesapla doğrulanmadı. Ham yanıtı görmek için:
 
-Needs Plasma 6, `python3`, and `msgfmt` (gettext) for the Turkish translation.
-
-```sh
-git clone https://github.com/yusufipk/kde-agents-usage.git
-cd kde-agents-usage
-./install.sh
+```bash
+python3 -I ~/.local/share/plasma/plasmoids/io.github.kuzey.agentsusage/contents/code/fetch_usage.py --dump-antigravity
 ```
 
-Then add "Agents Usage" to a panel (right click the panel, Add Widgets), or open the system tray arrow, Configure System Tray, and set it to always shown. To update, run `git pull && ./install.sh` and restart Plasma with `systemctl --user restart plasma-plasmashell`.
+Kurulum: `cd agents-usage-plus && sh install.sh`, sonra tepsi ayarlarında "Ajan Limitleri"ni göster.

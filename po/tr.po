@@ -252,3 +252,48 @@ msgstr "Bu tokenların kullandıkça öde API'de tutacağı tutar, cache okuma v
 
 msgid "Not included: %1 tokens from models with no known price"
 msgstr "Dahil değil: fiyatı bilinmeyen modellerden %1 token"
+
+msgid "General"
+msgstr "Genel"
+
+msgid "Appearance"
+msgstr "Görünüm"
+
+msgid "Providers:"
+msgstr "Sağlayıcılar:"
+
+msgid "Antigravity, Gemini:"
+msgstr "Antigravity, Gemini:"
+
+msgid "Antigravity, Claude and GPT:"
+msgstr "Antigravity, Claude ve GPT:"
+
+msgid "Weekly, per model (Opus, Sonnet)"
+msgstr "Haftalık, model bazında (Opus, Sonnet)"
+
+msgid "Gemini 4 Argon, weekly"
+msgstr "Gemini 4 Argon, haftalık"
+
+msgid "%1 · %2"
+msgstr "%1 · %2"
+
+msgid "Tray icon:"
+msgstr "Tepsi ikonu:"
+
+msgid "Ring with the lowest remaining %"
+msgstr "En düşük kalan yüzdeyi gösteren halka"
+
+msgid "Plain icon"
+msgstr "Düz ikon"
+
+msgid "Show the Tokens tab"
+msgstr "Tokenlar sekmesini göster"
+
+msgid "Show the last update time"
+msgstr "Son güncelleme saatini göster"
+
+msgid "Gemini 4 Argon"
+msgstr "Gemini 4 Argon"
+
+msgid "Not active"
+msgstr "Pasif"

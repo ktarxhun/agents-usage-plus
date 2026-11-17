@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.extras as PlasmaExtras
 
@@ -12,7 +13,8 @@ PlasmaExtras.Representation {
 
     // Remembered for the session only
     property int currentTab: 0
-    readonly property bool limitsTab: currentTab === 0
+    readonly property bool showTokens: Plasmoid.configuration.showTokensTab
+    readonly property bool limitsTab: currentTab === 0 || !showTokens
     readonly property bool busy: limitsTab ? root.loading : root.tokensLoading
 
     Layout.minimumWidth: Kirigami.Units.gridUnit * 18
@@ -36,8 +38,17 @@ PlasmaExtras.Representation {
         contentItem: RowLayout {
             spacing: Kirigami.Units.smallSpacing
 
+            // Without the tokens tab there is nothing to switch between: show a plain title
+            PlasmaExtras.Heading {
+                visible: !full.showTokens
+                level: 4
+                text: i18n("Limits")
+                Layout.fillWidth: true
+            }
+
             PlasmaComponents3.TabBar {
                 id: tabBar
+                visible: full.showTokens
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 currentIndex: full.currentTab
@@ -96,6 +107,7 @@ PlasmaExtras.Representation {
                 }
                 visible: full.limitsTab
                 usage: root.usage
+                shownProviders: root.shownProviders
                 loading: root.loading
                 lastError: root.lastError
                 active: root.expanded
@@ -129,7 +141,7 @@ PlasmaExtras.Representation {
 
             PlasmaComponents3.Label {
                 Layout.fillWidth: true
-                visible: full.limitsTab
+                visible: full.limitsTab && Plasmoid.configuration.showLastUpdated
                 text: limitsView.fetchedText
                 color: Kirigami.Theme.disabledTextColor
                 font: Kirigami.Theme.smallFont

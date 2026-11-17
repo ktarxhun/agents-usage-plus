@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="refreshMinutes" type="Int">
+            <default>5</default>
+        </entry>
+        <entry name="showClaude" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="showCodex" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="showAntigravity" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="claudeSession" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="claudeWeekly" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="claudeScoped" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="codexSession" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="codexWeekly" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="agGeminiSession" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="agGeminiWeekly" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="agClaudeSession" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="agClaudeWeekly" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="agArgonWeekly" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="showTokensTab" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="showLastUpdated" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="trayStyle" type="String">
+            <default>ring</default>
+        </entry>
+    </group>
+</kcfg>

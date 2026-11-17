@@ -25,6 +25,8 @@ MouseArea {
         return Kirigami.Theme.highlightColor;
     }
     readonly property real size: Math.min(width, height)
+    // "ring" draws the remaining share around the icon, "icon" shows the plain icon only
+    readonly property bool ringMode: Plasmoid.configuration.trayStyle !== "icon"
 
     Layout.minimumWidth: vertical ? Kirigami.Units.iconSizes.small : height
     Layout.minimumHeight: vertical ? width : Kirigami.Units.iconSizes.small
@@ -46,7 +48,7 @@ MouseArea {
     // Fallback glyph while nothing is known yet.
     Kirigami.Icon {
         anchors.fill: parent
-        visible: !compact.known
+        visible: !compact.known || !compact.ringMode
         source: "speedometer"
         active: compact.containsMouse
     }
@@ -61,7 +63,7 @@ MouseArea {
         anchors.centerIn: parent
         width: compact.size
         height: width
-        visible: compact.known
+        visible: compact.known && compact.ringMode
         antialiasing: true
         preferredRendererType: Shape.CurveRenderer
         opacity: compact.containsMouse ? 1 : 0.9
